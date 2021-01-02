@@ -72,7 +72,6 @@ def BTC_alarm(request):
 	    i+=1
 	    d+=1
 
-
 	#Se reemplaza los valores por los BTC_ClosingPriceUSD del día anterior para asegurarnos que son correctos (descubrí que no lo eran, posiblemente por los llamados gaps en el precio de Bitcoin)
 	#Despreciaremos el primer registro ya que no podremos encontrar el BTC_ClosingPriceUSD del día anterior
 	BTC_data.loc[2:,"BTC_24hOpenUSD"] = BTC_data["BTC_ClosingPriceUSD"].shift(1)
