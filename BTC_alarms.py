@@ -1,12 +1,13 @@
+#Función envío alertas diarias de compra/venta por mail siguiendo la estrategia descubierta de las medias móviles de 9 + 23
+#Estrategia descubierta detallada en https://colab.research.google.com/drive/1z4aJ592OgnPNAWRgr2BHt8SrU7xVkfT8
+
 import pandas as pd
 import time
 from datetime import datetime, date, time, timedelta
 from binance.client import Client
-
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-
 
 def BTC_alarm(request):
 	#GET DATA
@@ -83,7 +84,7 @@ def BTC_alarm(request):
 
 
 	#CALCULAR ALARMAS
-	#Hallamos las mejores medias móviles
+	#Mejores medias móviles obtenidas en https://colab.research.google.com/drive/1z4aJ592OgnPNAWRgr2BHt8SrU7xVkfT8
 	MA_a_max = 9
 	MA_b_max = 23
 
@@ -110,30 +111,24 @@ def BTC_alarm(request):
 	last_close_price = BTC_data.loc[BTC_data.index[-2], "BTC_ClosingPriceUSD"]
 	last_open_price = BTC_data.loc[BTC_data.index[-2], "BTC_24hOpenUSD"]
 	last_variation = (last_close_price-last_open_price)/last_open_price*100
-
 	last_close_price_format = "{:,}".format(last_close_price).replace(',','~').replace('.',',').replace('~','.')
 	last_open_price_format = "{:,}".format(last_open_price).replace(',','~').replace('.',',').replace('~','.')
 
 	if last_variation>=0:
-		last_variation_format = '<span style="color: MediumSeaGreen">+'+ str(round(last_variation,2)) + '%</span>'
+	    last_variation_format = '<span style="color: MediumSeaGreen">+'+ str(round(last_variation,2)) + '%</span>'
 	else:
-		last_variation_format = '<span style="color: red">' + str(round(last_variation,2)) + '%</span>'
+	    last_variation_format = '<span style="color: red">' + str(round(last_variation,2)) + '%</span>'
 
-	
 	extra_text = "<ul>  <li>Open: " + str(last_open_price_format) + "$</li>  <li>Close: " + str(last_close_price_format) + "$</li>  <li>Change: " + last_variation_format +"</li></ul>"
 	
 	subject_buy = "BTC BUY ALARM"
 	message_buy = '<h1 style="color:MediumSeaGreen;">HA SALTADO LA SEÑAL DE COMPRA DE BTC</h1>'
-
 	subject_sell = "BTC SELL ALARM"
 	message_sell = '<h1 style="color:red;">HA SALTADO LA SEÑAL DE VENTA DE BTC</h1>'
-
 	subject_stay_in = "BTC alarm updated"
 	message_stay_in = "<h2>PERMANECE DENTRO DEL MERCADO</h2>"
-
 	subject_stay_out = "BTC alarm updated"
 	message_stay_out = "<h2>PERMANECE FUERA DEL MERCADO</h2>"
-
 
 	if buy == 1:
 	  subject = subject_buy
