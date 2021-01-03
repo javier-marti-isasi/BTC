@@ -87,17 +87,17 @@ def BTC_alarm(request):
 	MA_a_max = 9
 	MA_b_max = 23
 
-	#Creamos las mejores medias móviles de cierre para los precios de apertura y cierre
+	#Creamos las mejores medias móviles de para los precios de apertura y cierre
 	BTC_data["BTC_Closing_BMA_a"] = BTC_data["BTC_ClosingPriceUSD"].rolling(window=MA_a_max,min_periods=0).mean()
 	BTC_data["BTC_Closing_BMA_b"] = BTC_data["BTC_ClosingPriceUSD"].rolling(window=MA_b_max,min_periods=0).mean()
 	BTC_data["BTC_24Open_BMA_a"] = BTC_data["BTC_24hOpenUSD"].rolling(window=MA_a_max,min_periods=0).mean()
 	BTC_data["BTC_24Open_BMA_b"] = BTC_data["BTC_24hOpenUSD"].rolling(window=MA_b_max,min_periods=0).mean()
 
 	#Creamos las señales de alarma de compra y venta
-	#Si en un día la media móvil de 10 estaba por debajo de la de 20 y termina el día por encima, señal de compra = 1
+	#Si en un día la media móvil de 9 estaba por debajo de la de 23 y termina el día por encima, señal de compra = 1
 	BTC_data["BTC_buy_alarm"] = [1 if Open_BMA_b > Open_BMA_a and Closing_BMA_a > Closing_BMA_b else 0 for (Open_BMA_a,Open_BMA_b,Closing_BMA_a,Closing_BMA_b) in zip(BTC_data['BTC_24Open_BMA_a'],BTC_data['BTC_24Open_BMA_b'],BTC_data['BTC_Closing_BMA_a'],BTC_data['BTC_Closing_BMA_b'])] 
 
-	#Si en un día la media móvil de 10 estaba por arriba de la de 20 y termina el día por debajo, señal de venta = 1
+	#Si en un día la media móvil de 9 estaba por arriba de la de 23 y termina el día por debajo, señal de venta = 1
 	BTC_data["BTC_sell_alarm"] = [1 if Open_BMA_b < Open_BMA_a and Closing_BMA_a < Closing_BMA_b else 0 for (Open_BMA_a,Open_BMA_b,Closing_BMA_a,Closing_BMA_b) in zip(BTC_data['BTC_24Open_BMA_a'],BTC_data['BTC_24Open_BMA_b'],BTC_data['BTC_Closing_BMA_a'],BTC_data['BTC_Closing_BMA_b'])]  
 
 	buy = BTC_data.loc[BTC_data.index[-2], "BTC_buy_alarm"]
